@@ -14,8 +14,8 @@ fortigate_get_sessions_tabel.py
 to link a txt file from a web server, to the original file
 sudo ln -s /home/<user>/fortigate_sessions_list/csessions.txt /var/www/html/csessions.txt
 
-change:
-<api_token> - add the correct api token, as a string. 
-<ip address:port> - in the fortigate_get_sessions_tabel.py script
-<user> - change all user parameters to correkt user, if the path is okay
-you might need to add a empty txt file
+change:  
+  <api_token> - add the correct api token, as a string.  
+  <ip address:port> - in the fortigate_get_sessions_tabel.py script. 
+  <user> - change all user parameters to correkt user, if the path is okay. 
+  you might need to add a empty txt file
