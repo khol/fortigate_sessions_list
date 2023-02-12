@@ -18,3 +18,4 @@ change:
 <api_token> - add the correct api token, as a string
 <ip address:port> - in the fortigate_get_sessions_tabel.py script
 <user> - change all user parameters to correkt user, if the path is okay
+you might need to add a empty txt file
