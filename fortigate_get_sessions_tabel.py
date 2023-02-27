@@ -9,16 +9,20 @@ import ipaddress
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-api_token = <API_TOKEN_TO_THE_FORTIGATE_ATLEAST_READONLY>
+#api_token = <API_TOKEN_TO_THE_FORTIGATE_ATLEAST_READONLY>
+api_token = "xpQrx5fqr6c15bq1QNn7hqqcp4dfdt"
+VDOM = "data"
+
 headers = {
   "Authorization": "Bearer " + api_token
 }
-#filename = "./csessions.txt"
-filename = "/home/<user>/fortigate_sessions_list/csessions.txt"
-expiration_time = timedelta(minutes=3)
-number_of_sessions = 3
+filename = "./csessions.txt"
+#filename = "/home/<user>/fortigate_sessions_list/csessions.txt"
+expiration_time = timedelta(minutes=30)
+number_of_sessions = 10
+
 #exclude_list = ["10.0.0.0/8", "192.168.0.0/16", "172.16.0.0/12", "1.2.3.4"]
-exclude_list = ["10.0.0.0/8", "192.168.1.11", "172.16.0.0/12", "1.2.3.4"]
+exclude_list = ["10.0.0.0/8", "172.16.0.0/12", "1.2.3.4"]
 
 #check if the file alredy exist
 if not os.path.isfile(filename):
@@ -27,7 +31,8 @@ if not os.path.isfile(filename):
 
 while True:
   # https://docs.fortinet.com/document/fortigate/7.0.0/new-features/270209/clear-multiple-sessions-with-rest-api-7-0-2
-  url = "https://<ip-address:port>/api/v2/monitor/firewall/session?count=1000&destport=53&filter-csf=false&ip_version=ipboth&start=0&summary=true&vdom=root"
+  #url = "https://sto-dc-fgt02.aza.nu/api/v2/monitor/firewall/session?count=1000&destport=53&filter-csf=false&ip_version=ipboth&start=0&summary=true&vdom=data"
+  url = "https://sto-dc-fgt02.aza.nu/api/v2/monitor/firewall/session?count=10000&filter-csf=false&ip_version=ipboth&start=0&summary=true&vdom=data"
 
   response = requests.get(url, headers=headers, verify=False)
 
