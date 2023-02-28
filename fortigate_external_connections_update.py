@@ -8,6 +8,11 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 #firewwall name and token
 FIREWALLSTOKEN = [ {'name': <hostname/ip>, 'token': <api_token_for_fw>},{'name': <hostname/ip>, 'token': <api_token_for_fw>}]
 
+#Exsternal Connection block list name
+BLOCK_LIST_NAME 
+#path to where to find the blocklist.
+url
+
 # loop thorugh the firewall list
 for firewall in FIREWALLSTOKEN:
   #handele the api token
@@ -15,7 +20,7 @@ for firewall in FIREWALLSTOKEN:
     "Authorization": "Bearer " + firewall['token']
   }
   #url for the refresh
-  url = "https://"+firewall['name']+"/api/v2/monitor/system/external-resource/refresh?mkey=AUTO-DRIFTEN-BLOCK"
+  url = "https://"+firewall['name']+"/api/v2/monitor/system/external-resource/refresh?mkey="+BLOCK_LIST_NAME
   #respond and post
   response = requests.post(url, headers=headers, verify=False, timeout=2)
   #print status.
@@ -30,9 +35,9 @@ for firewall in FIREWALLSTOKEN:
     "Authorization": "Bearer " + firewall['token']
   }
   #url
-  url = "https://"+firewall['name']+"/api/v2/cmdb/system/external-resource/AUTO-DRIFTEN-BLOCK?datasource=1&with_meta=1"
+  url = "https://"+firewall['name']+"/api/v2/cmdb/system/external-resource/"+BLOCK_LIST_NAME+"?datasource=1&with_meta=1"
   #payload for update, if new path to file
-  payload = {'name': "AUTO-DRIFTEN-BLOCK", 'resource' : 'http://blocklist-service.ops.aza.nu/blocklists/onlyfortests'}
+  payload = {'name': BLOCK_LIST_NAME, 'resource' : 'http://'+url}
   #connect and get the respondcode
   response = requests.put(url, headers=headers, json=payload, verify=False )
   print (f"{firewall['name']} response: {response}")
