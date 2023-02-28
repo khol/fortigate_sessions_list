@@ -29,7 +29,7 @@ if not os.path.isfile(filename):
 
 while True:
   # https://docs.fortinet.com/document/fortigate/7.0.0/new-features/270209/clear-multiple-sessions-with-rest-api-7-0-2
-  #url = "https://"+<hostname/ip:port>"+/api/v2/monitor/firewall/session?count=1000&destport=53&filter-csf=false&ip_version=ipboth&start=0&summary=true&vdom="+VDOM
+  #url = "https://"+<hostname/ip:port>+"/api/v2/monitor/firewall/session?count=1000&destport=53&filter-csf=false&ip_version=ipboth&start=0&summary=true&vdom="+VDOM
   url = "https://"+<hostname/ip:port>+"/api/v2/monitor/firewall/session?count=10000&filter-csf=false&ip_version=ipboth&start=0&summary=true&vdom="+VDOM
 
   response = requests.get(url, headers=headers, verify=False)
