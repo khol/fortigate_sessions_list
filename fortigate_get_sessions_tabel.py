@@ -9,9 +9,8 @@ import ipaddress
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-#api_token = <API_TOKEN_TO_THE_FORTIGATE_ATLEAST_READONLY>
-api_token = "xpQrx5fqr6c15bq1QNn7hqqcp4dfdt"
-VDOM = "data"
+api_token = <API_TOKEN_TO_THE_FORTIGATE_ATLEAST_READONLY>
+VDOM = <vdome>
 
 headers = {
   "Authorization": "Bearer " + api_token
@@ -21,8 +20,7 @@ filename = "./csessions.txt"
 expiration_time = timedelta(minutes=30)
 number_of_sessions = 10
 
-#exclude_list = ["10.0.0.0/8", "192.168.0.0/16", "172.16.0.0/12", "1.2.3.4"]
-exclude_list = ["10.0.0.0/8", "172.16.0.0/12", "1.2.3.4"]
+exclude_list = ["10.0.0.0/8", "192.168.0.0/16", "172.16.0.0/12", "1.2.3.4"]
 
 #check if the file alredy exist
 if not os.path.isfile(filename):
@@ -31,8 +29,8 @@ if not os.path.isfile(filename):
 
 while True:
   # https://docs.fortinet.com/document/fortigate/7.0.0/new-features/270209/clear-multiple-sessions-with-rest-api-7-0-2
-  #url = "https://sto-dc-fgt02.aza.nu/api/v2/monitor/firewall/session?count=1000&destport=53&filter-csf=false&ip_version=ipboth&start=0&summary=true&vdom=data"
-  url = "https://sto-dc-fgt02.aza.nu/api/v2/monitor/firewall/session?count=10000&filter-csf=false&ip_version=ipboth&start=0&summary=true&vdom=data"
+  #url = "https://"+<hostname/ip:port>"+/api/v2/monitor/firewall/session?count=1000&destport=53&filter-csf=false&ip_version=ipboth&start=0&summary=true&vdom="+VDOM
+  url = "https://"+<hostname/ip:port>+"/api/v2/monitor/firewall/session?count=10000&filter-csf=false&ip_version=ipboth&start=0&summary=true&vdom="+VDOM
 
   response = requests.get(url, headers=headers, verify=False)
 
@@ -105,8 +103,8 @@ while True:
       time.sleep(20) # Vänta 20 sekunder innan nästa anrop.
   else:
     if response.status_code == 403:
-      print("Något authentiserings fel med API token, HTTP-statuskod: ", response.status_code)
+      print("some authentication missmatch for apia token, HTTP Code: ", response.status_code)
     else:
-      print("Ett fel uppstod. HTTP-statuskod: ", response.status_code)
+      print("Some Error, HTTP Code: ", response.status_code)
 
 # Stäng
