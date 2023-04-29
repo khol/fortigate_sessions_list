@@ -1,4 +1,4 @@
 *.pyc
 .DS_Store
 Thumbs.db
-firewall_inventory.yml
+firewall_inventory.json

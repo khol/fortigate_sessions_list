@@ -5,6 +5,8 @@ import time
 import os
 import re
 import ipaddress
+import json
+
 # för att ta bort alla varningar för https
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -17,21 +19,28 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 #VDOM = <vdome>
 #"VDOM = "root"
 
+#where the firewall information and token and vdom information is 
+with open('firewall_inventory.json', 'r') as f:
+  FIREWALLSTOKEN = json.load(f)
+
+
+#how many sessions should be allowd before block
 number_of_sessions = 5
+#how long time should the block be active
 ban_timer_sec = 1800
+#exclude list is what ips should not be blocked
 exclude_list = ["10.0.0.0/8", "192.168.0.0/16", "172.16.0.0/12"]
 
 
-
 headers = {
-  "Authorization": "Bearer " + api_token
+  "Authorization": "Bearer " + FIREWALLSTOKEN['token']
 }
 
 ban_list = []
 
 #print what have been put to Qurantine Monitor
 def get_qurantine(FIREWALLSTOKEN):
-  url = f"https://{FIREWALLSTOKEN[0]['name']}/api/v2/monitor/user/banned/select/?vdom={FIREWALLSTOKEN[0]['vdom']}}"
+  url = f"https://{FIREWALLSTOKEN['name']}/api/v2/monitor/user/banned/select/?vdom={FIREWALLSTOKEN['vdom']}"
   response = requests.get(url, headers=headers, verify=False)
   if response.status_code == 200:
     session_list = response.json()["results"]
@@ -41,7 +50,7 @@ def get_qurantine(FIREWALLSTOKEN):
 
 
 while True:
-  url = f"https://{FIREWALLSTOKEN[0]['name']}/api/v2/monitor/firewall/session?count=10000&filter-csf=false&ip_version=ipboth&start=0&summary=true&vdom={FIREWALLSTOKEN[0]['vdom']}"
+  url = f"https://{FIREWALLSTOKEN['name']}/api/v2/monitor/firewall/session?count=10000&filter-csf=false&ip_version=ipboth&start=0&summary=true&vdom={FIREWALLSTOKEN['vdom']}"
 
   response = requests.get(url, headers=headers, verify=False)
 
@@ -58,21 +67,27 @@ while True:
         if not any(ipaddress.ip_address(csessions) in ipaddress.ip_network(exclude) for exclude in exclude_list):
           ban_list.append (csessions)
 
-      #  post
-      for firewall in FIREWALLSTOKEN:  
-        #handele the api token
-        headers = {
-          "Authorization": "Bearer " + firewall['token']
-        }
+      #post 
+      #if there is multiple firewalls to block ips in, do this to a forloop, and comment out FIREWALLSTOKEN and uncomment firewall
+    #  for firewall in FIREWALLSTOKEN:
+        firewall_name = FIREWALLSTOKEN['name']
+        firewall_token = FIREWALLSTOKEN['token']
+        firewall_vdom = FIREWALLSTOKEN['vdom']
+    #    firewall_name = firewall['name']
+    #    firewall_token = firewall['token']
+    #    firewall_vdom = firewall['vdom']
+      #handele the api token
+      headers = {
+        "Authorization": "Bearer " + firewall_token
+      }
+      #url
+      url = f"https://{firewall_name}/api/v2/monitor/user/banned/add_users/?vdom={firewall_vdom}"
 
-        #url
-        url = f"https://{firewall['name']}/api/v2/monitor/user/banned/add_users/?vdom={firewall['vdom']}"
+      #payload for update, if new path to file
+      payload = {'ip_addresses': ban_list,"expiry": ban_timer_sec}
 
-        #payload for update, if new path to file
-        payload = {'ip_addresses': ban_list,"expiry": ban_timer_sec}
-
-        #connect and get the respondcode
-        response = requests.post(url, headers=headers, json=payload, verify=False )
+      #connect and get the respondcode
+      response = requests.post(url, headers=headers, json=payload, verify=False )
 
 
       time.sleep(5) # Vänta 20 sekunder innan nästa anrop.

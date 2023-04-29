@@ -1,3 +1,0 @@
-FIREWALLSTOKEN = [
-    {"name": "s.x.y.z", "token": "token_password", "vodm": "vdom" }
-  ]
