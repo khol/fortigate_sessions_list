@@ -9,7 +9,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 FIREWALLSTOKEN = [ {'name': <hostname/ip>, 'token': <api_token_for_fw>},{'name': <hostname/ip>, 'token': <api_token_for_fw>}]
 
 #Exsternal Connection block list name
-BLOCK_LIST_NAME 
+BLOCK_LIST_NAME = <name of the blocklist>
 #path to where to find the blocklist.
 url
 
