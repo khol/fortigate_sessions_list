@@ -24,8 +24,8 @@ change:
 the script is to ban ips, that has more active sessions than somthing.
 
 ## files to change 
-fortigate_get_sessions_tabel_banip.py
-example_firewall_inventory.json
+fortigate_get_sessions_tabel_banip.py<br />
+example_firewall_inventory.json<br />
 
 ## value to change 
 ### how many conncurent sessions should trigger a ban
