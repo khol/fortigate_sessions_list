@@ -33,7 +33,6 @@ number_of_sessions = 200
 ban_timer_sec = 1800
 #exclude list is what ips should not be blocked
 exclude_list = ["10.0.0.0/8", "192.168.0.0/16", "172.16.0.0/12"]
-exclude_list = ["10.0.0.0/8", "172.16.0.0/12"]
 
 
 
