@@ -2,3 +2,5 @@
 .DS_Store
 Thumbs.db
 firewall_inventory.json
+session_banip_list.txt
+sessions_3_4_delar_av_max.txt

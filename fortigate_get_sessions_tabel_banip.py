@@ -1,6 +1,9 @@
+#!/usr/bin/env python
 import requests
 from collections import Counter
 from datetime import datetime, timedelta
+from datetime import datetime
+import numpy as np
 import time
 import os
 import re
@@ -25,18 +28,25 @@ with open('firewall_inventory.json', 'r') as f:
 
 
 #how many sessions should be allowd before block
-number_of_sessions = 5
+number_of_sessions = 200
 #how long time should the block be active
 ban_timer_sec = 1800
 #exclude list is what ips should not be blocked
 exclude_list = ["10.0.0.0/8", "192.168.0.0/16", "172.16.0.0/12"]
+exclude_list = ["10.0.0.0/8", "172.16.0.0/12"]
+
 
 
 headers = {
   "Authorization": "Bearer " + FIREWALLSTOKEN['token']
 }
 
-ban_list = []
+
+
+# Get the current date and time
+now = datetime.now()
+# Format the date and time string
+formatted_date = now.strftime("%Y-%m-%d %H:%M:%S")
 
 #print what have been put to Qurantine Monitor
 def get_qurantine(FIREWALLSTOKEN):
@@ -48,8 +58,29 @@ def get_qurantine(FIREWALLSTOKEN):
     for i in session_list:
       print (f"expires: {datetime.fromtimestamp(i['expires'])} created: {datetime.fromtimestamp(i['created'])} ip_address: {i['ip_address']} source: {i['source']} ipv6: {i['ipv6']}")
 
+def print_to_file_3_4(saddr_counter):
+  with open('sessions_3_4_delar_av_max.txt', 'a') as file:
+    # write a string to the file
+    start = '*'*20+f'{formatted_date}'+'*'*20+f'\n'
+    file.write( start )
+    for key, value in saddr_counter.items():
+      if value > ((number_of_sessions/4)*3):
+        #print (f"if_saddr_counter: {value} - {key}")
+        file.write(f'{key}: {value}'+f'\n')
+    file.write('*'*30+f'\n')
+
+def print_to_file_banip_list(ban_list):
+  with open('session_banip_list.txt', 'a') as file:
+    # write a string to the file
+    start = '*'*20+f'{formatted_date}'+'*'*20+f'\n'
+    file.write( start )
+    for ban_ip in ban_list:
+      #print (f"if_saddr_counter: {value} - {key}")
+      file.write(f'{ban_ip}'+f'\n')
+    file.write('*'*30+f'\n')
 
 while True:
+  ban_list = []
   url = f"https://{FIREWALLSTOKEN['name']}/api/v2/monitor/firewall/session?count=10000&filter-csf=false&ip_version=ipboth&start=0&summary=true&vdom={FIREWALLSTOKEN['vdom']}"
 
   response = requests.get(url, headers=headers, verify=False)
@@ -59,6 +90,10 @@ while True:
       session_list = response.json()["results"]["details"]
       # Använd Counter från collections modulen för att räkna upp antalet förekomster av varje saddr
       saddr_counter = Counter(session['saddr'] for session in session_list)
+
+      #print to file, for all 3/4 of max
+      print_to_file_3_4(saddr_counter)
+      
       # Skapa en lista med bara de sessions som förekommer fler än 5 gånger
       common_sessions = [saddr for saddr, count in saddr_counter.items() if count >= number_of_sessions]
       # Skriv ut den nya listan
@@ -89,9 +124,14 @@ while True:
       #connect and get the respondcode
       response = requests.post(url, headers=headers, json=payload, verify=False )
 
+      #print all ban ip to file
+      print_to_file_banip_list(ban_list)
 
+      arr = np.array(ban_list)
+      print(f'ban ip list count: {arr.size}')
       time.sleep(5) # Vänta 20 sekunder innan nästa anrop.
       
+      #print all ips from the Quarantine Monitor
       get_qurantine(FIREWALLSTOKEN)
       
 
